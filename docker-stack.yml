@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+
+  charge-manager:
+    image: charge-manager:latest
+    build: ./charge-manager
+    networks:
+      - dac-net
+    ports:
+      - "8080:8080"
+    depends_on:
+      - charge-proxy
+      - postgres
+
+  charge-proxy:
+    image: charge-proxy:latest
+    build: ./charge-proxy
+    networks:
+      - dac-net
+    ports:
+      - "8081:8081"
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dac
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - dac-net
+
+networks:
+  dac-net:
+    external: true
+
+volumes:
+  pgdata:
